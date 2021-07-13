@@ -1,12 +1,13 @@
-class Grass extends LivingCreature {
+class Grass extends livinlife {
     constructor(x, y) {
-        super.constructor(chooseCell)
+        super(x, y)
         this.multiply = 0;
     }
 
+
     mul() {
         this.multiply++;
-        var emptyCells = this.chooseCell(0);
+        var emptyCells = super.chooseCell(0);
         var newCell = random(emptyCells);
 
         if (newCell && this.multiply >= 10) {
@@ -19,4 +20,7 @@ class Grass extends LivingCreature {
             this.multiply = 0;
         }
     }
+
+
+
 }

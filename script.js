@@ -53,7 +53,7 @@ var predatorArr = []
 var stoneArr = []
 var virusArr = []
 function setup() {
-    frameRate(4);
+    frameRate(6);
     createCanvas(matrix[0].length * side, matrix.length * side);
     background('#acacac');
 
@@ -133,7 +133,7 @@ function draw() {
         }
     }
     for (var i in virusArr) {
-        virusArr[i].mul();
+    
         virusArr[i].eat();
     }
 }
