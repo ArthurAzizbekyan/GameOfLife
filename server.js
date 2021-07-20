@@ -3,6 +3,7 @@ var app = express();
 var server = require('http').Server(app);
 var io = require('socket.io')(server);
 
+var fs= require("fs");
 
 app.use(express.static("."));
 
@@ -175,3 +176,17 @@ io.on('connection', function (socket) {
     createObject(matrix)
 }
 )
+var statistics= {}
+
+setInterval(function(){
+    statistics.grass=grassArr.length;
+    statistics.grassEater= grassEaterArr.length;
+    statistics.health=healthArr.length;
+    statistics.predator=predatorArr.length;
+    statistics.virus=virusArr.lenght;
+    statistics.antivirus=antivirusArr.lenght;
+    statistics.stone=stoneArr.lenght;
+
+    fs.writeFileSync("statistics.json",
+    JSON.stringify(statistics) )  
+},1000)
