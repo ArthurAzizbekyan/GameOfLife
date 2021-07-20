@@ -1,5 +1,5 @@
 let Livinglife = require("./class.js")
-module.exports =class Grass extends Livinglife {
+module.exports =class Health extends Livinglife {
     constructor(x, y) {
         super(x, y)
         this.multiply = 0;
@@ -20,8 +20,8 @@ module.exports =class Grass extends Livinglife {
             var newY = newCell[1];
             matrix[newY][newX] = 1;
 
-            var newGrass = new Grass(newX, newY, 1);
-            grassArr.push(newGrass);
+            var newHealth = new Health(newX, newY, 1);
+            healthArr.push(newHealth);
             this.multiply = 0;
         }
     }

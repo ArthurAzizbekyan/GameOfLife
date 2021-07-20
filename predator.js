@@ -1,4 +1,5 @@
-class Predator extends livinlife {
+let Livinglife = require("./class.js")
+module.exports = class Predator extends Livinglife {
 
     constructor(x, y) {
         super(x, y)
@@ -14,8 +15,8 @@ class Predator extends livinlife {
 
     mul() {
         this.multiply++;
-        var emptyCells = this.chooseCell(0);
-        var newCell = random(emptyCells);
+        var emptyCells = super.chooseCell(0);
+        var newCell = emptyCells[Math.floor(Math.random() * emptyCells.length)]
 
         if (newCell && this.multiply >= 15) {
             var newX = newCell[0];
