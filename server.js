@@ -3,16 +3,16 @@ var app = express();
 var server = require('http').Server(app);
 var io = require('socket.io')(server);
 
-var fs= require("fs");
+var fs = require("fs");
 
 app.use(express.static("."));
 
 app.get('/', function (req, res) {
     res.redirect('index.html');
 });
-server.listen(8888);
+server.listen(8080);
 
-function generator(matLen, gr, grEat, pr, st, vir, ant,heal) {
+function generator(matLen, gr, grEat, pr, st, vir, ant, ) {
 
     let matrix = []
 
@@ -62,13 +62,7 @@ function generator(matLen, gr, grEat, pr, st, vir, ant,heal) {
             if (matrix[x][y] == 0) {
                 matrix[x][y] = 6;
             }
-            for (let i=0; i< heal; i++){
-                let x = Math.floor(Math.random() * matLen);
-                let y = Math.floor(Math.random() * matLen);
-                if(matrix [x][y]==0){
-                    matrix[x][y]==7;
-                }
-            }
+          
         }
 
         io.sockets.emit("send matrix", matrix)
@@ -79,7 +73,7 @@ function generator(matLen, gr, grEat, pr, st, vir, ant,heal) {
 
 }
 
-matrix = generator(15, 20, 15, 20, 10, 3, 4);
+matrix = generator(15, 20, 15, 20, 10, 3, 4,);
 
 io.sockets.emit('send matrix', matrix);
 
@@ -98,7 +92,7 @@ Predator = require("./predator")
 Stone = require("./stone")
 Virus = require("./virus")
 Antivirus = require("./antivirus")
-Helath = require("./health")
+
 
 function createObject(matrix) {
     for (var y = 0; y < matrix.length; y++) {
@@ -123,70 +117,126 @@ function createObject(matrix) {
             } else if (matrix[y][x] == 6) {
                 var ant = new Antivirus(x, y)
                 antivirusArr.push(ant)
-            }else if (matrix[y][x]== 7){
-                var heal = new Health(x,y)
-                healthArr.push(heal)
-            }
-            
-            
+            } 
+
 
         }
     }
     io.sockets.emit("send matrix", matrix)
-    
+
 }
 
 function game() {
-        for (var i in grassArr) {
-            grassArr[i].mul()
-        }
-
-        for (var i in grassEaterArr) {
-            grassEaterArr[i].mul();
-            grassEaterArr[i].eat();
-        }
-        for (var i in predatorArr) {
-            predatorArr[i].mul();
-            predatorArr[i].eat();
-        }
-
-        for (var i in stoneArr) {
-            if (predatorArr.length > 5) {
-                stoneArr[i].eat();
-            }
-        }
-        for (var i in virusArr) {
-
-            virusArr[i].eat();
-        }
-        for (var i in antivirusArr) {
-            antivirusArr[i].eat();
-            antivirusArr[i].move();
-        }
-        for(var i in healthArr){
-            healthArr[i].mul();
-        }
-        io.sockets.emit("send matrix", matrix)
-
+    for (var i in grassArr) {
+        grassArr[i].mul()
     }
+
+    for (var i in grassEaterArr) {
+        grassEaterArr[i].mul();
+        grassEaterArr[i].eat();
+    }
+    for (var i in predatorArr) {
+        predatorArr[i].mul();
+        predatorArr[i].eat();
+    }
+
+    for (var i in stoneArr) {
+        if (predatorArr.length > 5) {
+            stoneArr[i].eat();
+        }
+    }
+    for (var i in virusArr) {
+
+        virusArr[i].eat();
+    }
+    for (var i in antivirusArr) {
+        antivirusArr[i].eat();
+        antivirusArr[i].move();
+    }
+    
+    io.sockets.emit("send matrix", matrix)
+
+}
 setInterval(game, 1000)
 
 io.on('connection', function (socket) {
-    
+    socket.on("kill", kill);
+    socket.on("add grass", addGrass);
+    socket.on("add grassEater", addGrassEater);
     createObject(matrix)
 }
-)
-var statistics= {}
 
-setInterval(function(){
-    statistics.grass=grassArr.length;
-    statistics.grassEater= grassEaterArr.length;
-    statistics.health=healthArr.length;
-    statistics.predator=predatorArr.length;
-    statistics.virus=virusArr.lenght;
-    statistics.antivirus=antivirusArr.lenght;
-    statistics.stone=stoneArr.lenght;
+)
+function kill() {
+    grassArr = [];
+    grassEaterArr = [];
+    predatorArr = [];
+    virusArr = [];
+    stoneArr = [];
+    antivirusArr = [];
+    for (var y = 0; y < matrix.length; y++) {
+        for (var x = 0; x < matrix[y].length; x++) {
+            matrix[y][x] = 0;
+        }
+    }
+    io.sockets.emit("send matrix", matrix);
+}
+
+
+function addGrass() {
+    for (var i = 0; i < 7; i++) {
+    var x = Math.floor(Math.random() * matrix[0].length)
+    var y = Math.floor(Math.random() * matrix.length)
+        if (matrix[y][x] == 0) {
+            matrix[y][x] = 1
+            var gr = new Grass(x, y, 1)
+            grassArr.push(gr)
+        }
+    }
+    io.sockets.emit("send matrix", matrix);
+}
+function addGrassEater() {
+    for (var i = 0; i < 7; i++) {   
+    var x = Math.floor(Math.random() * matrix[0].length)
+    var y = Math.floor(Math.random() * matrix.length)
+        if (matrix[y][x] == 0) {
+            matrix[y][x] = 2
+            grassEaterArr.push(new GrassEater(x, y, 2))
+        }
+    }
+    io.sockets.emit("send matrix", matrix);
+}
+
+var statistics = {}
+
+setInterval(function () {
+    statistics.grass = grassArr.length;
+    statistics.grassEater = grassEaterArr.length;
+    statistics.predator = predatorArr.length;
+    statistics.virus = virusArr.lenght;
+    statistics.antivirus = antivirusArr.lenght;
+    statistics.stone = stoneArr.lenght;
 
     fs.writeFileSync("statistics.json",
-    JSON.stringify(statistics) )  
-},1000)
+        JSON.stringify(statistics))
+}, 1000)
+
+
+weath = "winter"
+
+setInterval(function () {
+    if (weath == "winter") {
+        weath = "spring"
+    }
+    else if (weath == "spring") {
+        weath = "summer"
+    }
+    else if (weath == "summer") {
+        weath = "autumn"
+    }
+    else if (weath == "autumn") {
+        weath = "winter"
+    }
+
+    io.sockets.emit('weather', weath)
+}, 4000)

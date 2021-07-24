@@ -20,8 +20,7 @@ module.exports =class GrassEater extends Livinglife {
             var newGrass = new GrassEater(newX, newY);
             grassEaterArr.push(newGrass);
             this.multiply = 0;
-            
-        }
+            }
     }
 
     chooseCell(character) {
